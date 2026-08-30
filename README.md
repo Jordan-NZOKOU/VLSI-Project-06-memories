@@ -9,12 +9,61 @@ RISC-V byte addressing at the processor boundary.
 
 ```mermaid
 flowchart LR
-    PC[Byte address PC] -->|A[ADDR_WIDTH+1:2]| IMEM[Instruction ROM]
-    IMEM --> INSTR[32-bit instruction]
-    ADDR[Byte address ALUResult] -->|A[ADDR_WIDTH+1:2]| DMEM[Data RAM]
-    WD[WriteData] --> DMEM
-    WE[MemWrite] --> DMEM
-    DMEM --> RD[ReadData]
+    %% ==================================================
+    %% CPU / MEMORY INTERFACE
+    %% ==================================================
+
+    subgraph CPU["CPU / Processor"]
+        PC["PC<br/>Byte Address"]
+        INSTR["Instruction<br/>32-bit"]
+        ALU["ALU"]
+        WD["WriteData"]
+        WE["MemWrite"]
+        RD["ReadData"]
+    end
+
+    subgraph IMEM["Instruction Memory"]
+        IROM["Instruction ROM"]
+    end
+
+    subgraph DMEM["Data Memory"]
+        DRAM["Data RAM"]
+    end
+
+
+    %% ==================================================
+    %% INSTRUCTION FETCH
+    %% ==================================================
+
+    PC
+        -->|"A[ADDR_WIDTH+1:2]"|
+    IROM
+
+    IROM
+        -->|"32-bit instruction"|
+    INSTR
+
+
+    %% ==================================================
+    %% DATA MEMORY ACCESS
+    %% ==================================================
+
+    ALU
+        -->|"ALUResult<br/>(Byte Address)"|
+    DRAM
+
+    WD
+        -->|"WriteData"|
+    DRAM
+
+    WE
+        -->|"MemWrite"|
+    DRAM
+
+    DRAM
+        -->|"ReadData"|
+    RD
+
 ```
 
 ## Memory semantics
